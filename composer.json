@@ -1,12 +1,20 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "lnxinc/qb-mcp",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "One MCP server for every QuickBooks Online company you manage. Connects Claude, Cursor and any MCP client to multiple QuickBooks companies through a single connector.",
     "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "quickbooks",
+        "quickbooks-online",
+        "intuit",
+        "accounting",
         "laravel",
-        "framework"
+        "claude",
+        "ai"
     ],
+    "homepage": "https://github.com/lnxinc/qb-mcp",
     "license": "MIT",
     "require": {
         "php": "^8.3",

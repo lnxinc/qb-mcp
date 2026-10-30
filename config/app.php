@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Open Registration
+    |--------------------------------------------------------------------------
+    |
+    | The first account can always be created. After that, registration is
+    | closed unless this is enabled or the person holds a team invitation.
+    |
+    */
+
+    'open_registration' => (bool) env('APP_OPEN_REGISTRATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

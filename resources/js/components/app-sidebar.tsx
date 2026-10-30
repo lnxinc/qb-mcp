@@ -15,13 +15,14 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { redirect as dashboardRedirect } from '@/routes/dashboard';
 import type { NavItem } from '@/types';
 
 export function AppSidebar() {
     const page = usePage();
     const dashboardUrl = page.props.currentTeam
         ? dashboard(page.props.currentTeam.slug)
-        : '/';
+        : dashboardRedirect();
 
     const mainNavItems: NavItem[] = [
         {

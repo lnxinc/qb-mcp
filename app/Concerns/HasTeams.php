@@ -2,6 +2,7 @@
 
 namespace App\Concerns;
 
+use App\Actions\Teams\CreateTeam;
 use App\Data\TeamPermissions;
 use App\Data\UserTeam;
 use App\Enums\TeamPermission;
@@ -74,6 +75,28 @@ trait HasTeams
         return $this->ownedTeams()
             ->where('teams.is_personal', true)
             ->first();
+    }
+
+    /**
+     * Get the team the user should be working in, repairing the current team
+     * when it is missing or no longer accessible. A user without any team gets
+     * a personal team so they are never locked out of the dashboard.
+     */
+    public function ensureCurrentTeam(): Team
+    {
+        if ($this->currentTeam && $this->belongsToTeam($this->currentTeam)) {
+            return $this->currentTeam;
+        }
+
+        $team = $this->personalTeam() ?? $this->fallbackTeam();
+
+        if ($team) {
+            $this->switchTeam($team);
+
+            return $team;
+        }
+
+        return app(CreateTeam::class)->handle($this, $this->name."'s Team", isPersonal: true);
     }
 
     /**

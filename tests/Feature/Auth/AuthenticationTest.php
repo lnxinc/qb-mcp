@@ -49,6 +49,40 @@ test('users can authenticate using the login screen', function () {
     $response->assertRedirect(route('dashboard'));
 });
 
+test('users without a team receive a personal team when they log in', function () {
+    $user = User::factory()->make(['name' => 'Taylor Otwell']);
+    $user->save();
+
+    expect($user->teams()->count())->toBe(0);
+
+    $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated();
+
+    $team = $user->fresh()->currentTeam;
+
+    expect($team)->not->toBeNull()
+        ->and($team->is_personal)->toBeTrue()
+        ->and($team->name)->toBe("Taylor Otwell's Team");
+
+    $response->assertRedirect(route('dashboard', ['current_team' => $team->slug]));
+});
+
+test('the dashboard shortcut repairs a missing current team', function () {
+    $user = User::factory()->make();
+    $user->save();
+
+    $response = $this->actingAs($user)->get(route('dashboard.redirect'));
+
+    $team = $user->fresh()->currentTeam;
+
+    expect($team)->not->toBeNull();
+    $response->assertRedirect(route('dashboard', ['current_team' => $team->slug]));
+});
+
 test('passkey login response redirects to the current team dashboard', function () {
     $user = User::factory()->create();
 

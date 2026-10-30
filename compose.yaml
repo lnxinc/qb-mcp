@@ -1,0 +1,42 @@
+# Run QuickBooks MCP with Docker Compose.
+#
+#   cp .env.example .env      # then fill in QUICKBOOKS_* and MCP_ACCESS_TOKEN
+#   docker compose up -d
+#   open http://localhost:8000
+#
+# Everything that must survive restarts (the SQLite database, the generated
+# APP_KEY and any HTTPS certificates) lives in the `qb-mcp-data` volume.
+services:
+    qb-mcp:
+        image: ghcr.io/lnxinc/qb-mcp:latest
+        build: .
+        container_name: qb-mcp
+        restart: unless-stopped
+        env_file:
+            - path: .env
+              required: false
+        environment:
+            APP_ENV: production
+            APP_DEBUG: ${APP_DEBUG:-false}
+            APP_URL: ${APP_URL:-http://localhost:8000}
+            LOG_CHANNEL: stderr
+            DB_CONNECTION: sqlite
+            DB_DATABASE: /data/database.sqlite
+            SESSION_DRIVER: database
+            CACHE_STORE: database
+            QUEUE_CONNECTION: sync
+            # ":8000" serves plain HTTP on port 8000. Set SERVER_NAME to your public
+            # hostname (for example qb.example.com) and publish ports 80 and 443 to
+            # get automatic HTTPS certificates from Let's Encrypt.
+            SERVER_NAME: ${SERVER_NAME:-:8000}
+        ports:
+            - '${APP_PORT:-8000}:8000'
+            # Uncomment for a public deployment with automatic HTTPS:
+            # - "80:80"
+            # - "443:443"
+            # - "443:443/udp"
+        volumes:
+            - qb-mcp-data:/data
+
+volumes:
+    qb-mcp-data:
